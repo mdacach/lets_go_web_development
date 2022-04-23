@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"html/template"
+	"log"
 	"net/http"
 	"strconv"
 )
@@ -14,7 +16,19 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Write([]byte("Home of Snippetbox"))
+	homePageHTMLPath := "./ui/html/home.page.tmpl.html"
+	ts, err := template.ParseFiles(homePageHTMLPath)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, "Internal Server Error", 500)
+		return
+	}
+
+	err = ts.Execute(w, nil)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, "Internal Server Error", 500)
+	}
 }
 
 func showSnippet(w http.ResponseWriter, r *http.Request) {

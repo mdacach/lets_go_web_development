@@ -16,8 +16,13 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	homePageHTMLPath := "./ui/html/home.page.tmpl.html"
-	ts, err := template.ParseFiles(homePageHTMLPath)
+	filePaths := []string{
+		"./ui/html/home.page.tmpl.html",
+		"./ui/html/base.layout.tmpl.html",
+		"./ui/html/footer.partial.tmpl.html",
+	}
+
+	ts, err := template.ParseFiles(filePaths...)
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, "Internal Server Error", 500)

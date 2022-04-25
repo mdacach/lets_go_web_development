@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-func homeHandler(w http.ResponseWriter, r *http.Request) {
+func (app *application) homeHandler(w http.ResponseWriter, r *http.Request) {
 	// As "/" acts as a catch-all, we need to actively check
 	// to see if the path matched exactly.
 	if r.URL.Path != "/" {
@@ -36,7 +36,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func showSnippet(w http.ResponseWriter, r *http.Request) {
+func (app *application) showSnippet(w http.ResponseWriter, r *http.Request) {
 	idFromQuery := r.URL.Query().Get("id")
 	id, err := strconv.Atoi(idFromQuery)
 	// IDs start at 1.
@@ -48,7 +48,7 @@ func showSnippet(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Displaying snippet with ID %d...", id)
 }
 
-func createSnippet(w http.ResponseWriter, r *http.Request) {
+func (app *application) createSnippet(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		w.Header().Set("Allow", "POST")
 		http.Error(w, "Method Not Allowed", 405)

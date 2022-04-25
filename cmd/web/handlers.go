@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"snippetbox/pkg/models"
 	"strconv"
 )
 
@@ -42,7 +43,16 @@ func (app *application) showSnippet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Fprintf(w, "Displaying snippet with ID %d...", id)
+	snippet, err := app.snippetModel.Get(id)
+	if err == models.ErrorNoRecord {
+		app.notFoundError(w)
+		return
+	} else if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	fmt.Fprintf(w, "%v", snippet)
 }
 
 func (app *application) createSnippet(w http.ResponseWriter, r *http.Request) {
@@ -52,5 +62,15 @@ func (app *application) createSnippet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Write([]byte("Creating a snippet, huh?"))
+	title := "O snail"
+	content := "O snail\nClimb Mount Fuji,\nBut slowly, slowly!\n\n- Kobayashi Issa"
+	expires := "7"
+
+	id, err := app.snippetModel.Insert(title, content, expires)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	http.Redirect(w, r, fmt.Sprintf("/snippet?id=%d", id), http.StatusSeeOther)
 }

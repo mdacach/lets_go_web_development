@@ -6,13 +6,15 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"snippetbox/pkg/models/mysql"
 
 	_ "github.com/go-sql-driver/mysql"
 )
 
 type application struct {
-	errorLog *log.Logger
-	infoLog  *log.Logger
+	errorLog     *log.Logger
+	infoLog      *log.Logger
+	snippetModel *mysql.SnippetModel
 }
 
 func main() {
@@ -20,7 +22,7 @@ func main() {
 	// We can specify a default value, a description, and the variable will be
 	// automatically parsed to a string
 	addr := flag.String("addr", ":4000", "HTTP network address")
-	dsn := flag.String("dsn", "web:pass@/snippetbox?parseTime=true", "MySQL data source name")
+	dsn := flag.String("dsn", "web:1234@/snippetbox?parseTime=true", "MySQL data source name")
 	flag.Parse() // Remember to parse the flags, otherwise you will always be using the default value
 
 	// We can create new loggers
@@ -36,8 +38,9 @@ func main() {
 	defer db.Close()
 
 	app := &application{
-		errorLog: errorLog,
-		infoLog:  infoLog,
+		errorLog:     errorLog,
+		infoLog:      infoLog,
+		snippetModel: &mysql.SnippetModel{DB: db},
 	}
 
 	srv := &http.Server{

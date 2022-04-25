@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"html/template"
 	"net/http"
 	"snippetbox/pkg/models"
 	"strconv"
@@ -24,7 +25,6 @@ func (app *application) homeHandler(w http.ResponseWriter, r *http.Request) {
 
 	for _, snippet := range snippets {
 		fmt.Fprintf(w, "%v\n", snippet)
-
 	}
 
 	/*
@@ -63,6 +63,23 @@ func (app *application) showSnippet(w http.ResponseWriter, r *http.Request) {
 	} else if err != nil {
 		app.serverError(w, err)
 		return
+	}
+
+	filePaths := []string{
+		"./ui/html/show.page.tmpl.html",
+		"./ui/html/base.layout.tmpl.html",
+		"./ui/html/footer.partial.tmpl.html",
+	}
+
+	templates, err := template.ParseFiles(filePaths...)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	err = templates.Execute(w, snippet)
+	if err != nil {
+		app.serverError(w, err)
 	}
 
 	fmt.Fprintf(w, "%v", snippet)

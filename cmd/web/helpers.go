@@ -9,7 +9,7 @@ import (
 // Private helper functions for error handling
 func (app *application) serverError(writer http.ResponseWriter, err error) {
 	trace := fmt.Sprintf("%s\n%s", err.Error(), debug.Stack())
-	app.errorLog.Println(trace)
+	app.errorLog.Output(2, trace)
 
 	http.Error(writer, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 }
